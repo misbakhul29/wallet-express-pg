@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String      @id @default(uuid())
+  username   String      @unique
+  password   String
+  dodiWallet DodiWallet?
+  dudiWallet DudiWallet?
+  codiWallet CodiWallet?
+}
+
+model DodiWallet {
+  id           String        @id @default(uuid())
+  userId       String        @unique
+  balance      Decimal       @default(0) @db.Decimal(10, 2)
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model DudiWallet {
+  id           String        @id @default(uuid())
+  userId       String        @unique
+  balance      Decimal       @default(0) @db.Decimal(10, 2)
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model CodiWallet {
+  id           String        @id @default(uuid())
+  userId       String        @unique
+  balance      Decimal       @default(0) @db.Decimal(10, 2)
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  id                 String      @id @default(uuid())
+  sourceWalletType   String
+  sourceWalletId     String
+  type               String
+  amount             Decimal     @db.Decimal(10, 2)
+  description        String?
+  createdAt          DateTime    @default(now())
+  senderWalletType   String?
+  senderWalletId     String?
+  receiverWalletType String?
+  receiverWalletId   String?
+  DodiWallet         DodiWallet? @relation(fields: [dodiWalletId], references: [id])
+  dodiWalletId       String?
+  DudiWallet         DudiWallet? @relation(fields: [dudiWalletId], references: [id])
+  dudiWalletId       String?
+  CodiWallet         CodiWallet? @relation(fields: [codiWalletId], references: [id])
+  codiWalletId       String?
+}
